@@ -1,0 +1,49 @@
+## .NET / Visual Studio
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+artifacts/
+
+# Build logs
+[Ll]og/
+[Ll]ogs/
+*.log
+*.binlog
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# MSIX / publish output
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixupload
+*.appx
+*.appxbundle
+*.appxupload
+publish/
+
+# Code analysis
+_ReSharper*/
+*.DotSettings.user
+.idea/
+
+# 交付物（不要 push 生成的 exe）
+dist/
+
+# 旧 Python 存档（不需要进仓库）
+toberemoved/
+
+# Trae IDE
+.trae/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MicaComic2PDF.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MicaComic2PDF.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

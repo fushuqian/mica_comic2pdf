@@ -1,0 +1,24 @@
+# MEMORIES
+
+- 2026-10-22：老板找当年的 Pluto Comic2Pdf 找了半天，网上确实绝版了。与其继续翻坟，不如复刻一个：功能就三件事——切双页、限尺寸、压质量，几十行 Python 就能做得比原版更好用。
+- img2pdf 直接嵌入 JPEG，避免二次压缩，这是体积和画质的关键；Pillow 只负责缩放和重新编码。
+- PyInstaller 打包 tkinterdnd2 必须 `--collect-all tkinterdnd2`，否则 exe 能启动但拖拽失效；onefile 首启动慢是正常的。
+- windowed 构建下 CLI 模式没有控制台输出，测试逻辑别指望看终端日志，用产出文件验证。
+- 2026-10-22：DWM Mica 和亚克力模糊在这台机器上都不出效果（远程/虚拟显示），Qt 和 tkinter 都一样。想要毛玻璃只能自绘壁纸模糊底，或者干脆用 WinUI3 重写。老板拍板：功能优先，WinUI3 放后面。
+- 这台机器上 Qt 窗口的屏幕截图（GDI CopyFromScreen）抓不到内容，但 PrintWindow 和 Qt 自己的 grab() 正常，以后验证界面别只信全屏截图。
+- 2026-10-22：WinUI3 重写当天。
+  - 这台机器有 .NET Runtime 但没 SDK，winget 装 .NET 9.0.319 一条命令搞定。
+  - WinUI3 模板不是随 SDK 来的，要 `dotnet new install Microsoft.WindowsAppSDK.WinUI.CSharp.Templates`。
+  - WinUI3 没有 `dotnet workload install winui` —— .NET 9 里 WinUI3 通过 NuGet 包分发，不用 workload。
+  - System.CommandLine 不是 .NET 内置的，需要单独装 NuGet 包。
+  - WinUI3 XAML 和 WPF 差异大：Window 无 Width/Height/DataContext，Grid/StackPanel 无 IsEnabled，Binding 无 StringFormat/CommandParameter。
+  - SixLabors.ImageSharp 3.x 里 Image 是抽象类，要用泛型 Image<Rgba32> 才有 Clone() 和 Mutate()。
+  - 自写 PDF 比想象简单：xref 表 + trailer + %%EOF，每页三个 obj，200 行 C# 搞定。
+  - 模块化 IOutputFormat 架构是老板提的，说以后想加 CBZ。这个抽象做对了——Core 和 Formats 完全解耦。
+  - 旧版 Python 先留着，WinUI3 版实测 OK 后再移 toberemoved。
+- 2026-10-22：WinUI3 "运行了没反应" 排障。
+  - 症状：exe 启动后立即静默退出，无任何报错提示。
+  - 根因：Unpackaged 模式（EnableMsixTooling=false）未初始化 Windows App SDK bootstrap。
+  - 修复：csproj 加 `<WindowsPackageType>None</WindowsPackageType>` 即可，MSBuild 会自动注入 bootstrap 代码，不用手写 `Bootstrap.Initialize()`。
+  - 另一坑：系统没装 Windows App SDK 运行时的话，bootstrap 后会弹 "This application could not be started"。下载 https://aka.ms/windowsappsdk/2.5/2.5.1/windowsappruntimeinstall-x64.exe 静默安装即可。
+  - 最终交付走 `dotnet publish -r win-x64 --self-contained true`，用户机器不需要预装任何东西。
